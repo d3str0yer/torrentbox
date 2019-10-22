@@ -197,49 +197,6 @@ done
 echo
 
 
-
-
-
-# sed template yall: sed -i "s/ ORIG/ REPLACEMENT /" PATH
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# sed template: sed -i "s/ ORIG/ REPLACEMENT /" PATH
 
 exit 0
