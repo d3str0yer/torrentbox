@@ -20,8 +20,8 @@ This Script will install mutliple programs and configure them. After installatio
 
 ### Installation of Raspbian
 
-1. Download the latest version of Raspbian, install it on your SD card with win32diskimager(or whatever programm you fancy)
-2. On the boot folder create a new file called ssh, no file extension and no content
+1. Download the latest version of Raspbian, install it on your SD card
+2. In the boot folder create a new file called ssh, no file extension and no content
 3. Connect your Raspberry via ethernet to your Router (using the inbuilt wifi is not suggested)
 
 ### Pre-Install OpenVPN configuration
@@ -66,3 +66,17 @@ _Press CTRL+X, Y, ENTER to save the file_
 
 (change sda1 and sdb1 depending on which is the stick and which is the hdd, find out which is which with the command lsusb)
 
+### Start the Installation
+
+Connect to your Raspberry Pi through SSH as user "pi" with the password "raspberry"
+
+```sh
+sudo apt install git -y
+git clone https://github.com/d3str0yer/torrentbox.git --depth=100 -q
+cd torrentbox
+sudo ./torrentbox.sh
+```
+
+### FAQ
+
+_ask questions and I'll add them here_
