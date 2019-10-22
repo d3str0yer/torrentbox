@@ -1,6 +1,8 @@
 ![](files/logo.jpg)
 # Installation Script for a Raspberry Pi Seedbox
 
+#IF YOU FIND THIS BY CHANCE, DO NOT USE, STILL IN DEVELOPMENT!
+
 # TODO
 - [ ] motd
 - [ ] testing of full installation
