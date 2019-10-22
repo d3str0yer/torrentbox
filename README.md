@@ -16,7 +16,7 @@ This Script will install mutliple programs and configure them. After installatio
 
 ### Prerequisites
 * Clean install of the latest version of Raspbian (headless)
-* External HDD to keep your files, suggested: secondary device as a buffer, e.g. USB stick
+* External HDD to keep your files, suggested: secondary device as a buffer for downloads, e.g. USB stick
 * VPN subscription (Provider must support OpenVPN)
 
 ### Installation of Raspbian
@@ -35,6 +35,8 @@ This Script will install mutliple programs and configure them. After installatio
 ### Pre-Install Harddrive configuration
 
 _Warning: This will delete ALL data on your harddrives._
+
+_Skip if you already have formatted storage devices or want to use a NAS_
 
 Connect to your Raspberry Pi through SSH as user "pi" with the password "raspberry"
 
