@@ -2,8 +2,8 @@
 # Installation Script for a Raspberry Pi Seedbox
 
 ### Usage
-This Script will install mutliple programs and configure them. After installation you'll have a private seedbox, running the following programs:
-* qbittorrent-nox (accessible through the webinterface)
+This Script will install mutliple programs and configure them. After installation, you'll have a private seedbox running the following programs:
+* qbittorrent-nox (accessible through the web interface)
 * OpenVPN
 * fail2ban (intrusion prevention software)
 * samba (network share to access your files from other devices in the network)
@@ -13,7 +13,7 @@ This Script will install mutliple programs and configure them. After installatio
   * speedtest-cli (speedtest, duh)
   * netdata (performance monitoring webinterface)
 
-### Prerequisites
+### Pre-requisites
 * Clean install of the latest version of Raspbian (headless)
 * External HDD to keep your files, suggested: secondary device as a buffer for downloads, e.g. USB stick
 * VPN subscription (Provider must support OpenVPN)
@@ -21,14 +21,14 @@ This Script will install mutliple programs and configure them. After installatio
 ### Installation of Raspbian
 
 1. Download the latest version of Raspbian, install it on your SD card
-2. In the boot folder create a new file called ssh, no file extension and no content
+2. In the boot folder, create a new file called ssh, no file extension and no content
 3. Connect your Raspberry via ethernet to your Router (using the inbuilt wifi is not suggested)
 
 ### Pre-Install OpenVPN configuration
 
 1. Search for your Providers OpenVPN files and download them
 2. Create a new file called login.conf, in the first line add your username and in the second your password (username and password supplied by VPN Provider)
-3. If the OpenVPN files contain multiple .ovpn files delete all but the one server hub you want to connect to and rename it to openvpn.conf
+3. If the OpenVPN files contain multiple .ovpn files, delete all but the one server hub you want to connect to and rename it to openvpn.conf
 4. Change the line "auth-user-pass" to "auth-user-pass /etc/openvpn/login.conf"
 
 ### Pre-Install Harddrive configuration
