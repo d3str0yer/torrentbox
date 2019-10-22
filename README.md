@@ -6,7 +6,7 @@
 - [ ] testing of full installation
 - [ ] beta testing
 - [ ] add part about uploading openvpn files
-- [ ] 
+- [ ] ?
 
 ### Usage
 This Script will install mutliple programs and configure them. After installation, you'll have a private seedbox running the following programs:
