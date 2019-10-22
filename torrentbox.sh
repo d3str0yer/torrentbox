@@ -42,10 +42,10 @@ echo
 
 echo 
 
-./installer.sh
+./files/installer.sh
 
-./config.sh
+./files/config.sh
 
-echo "The script has finished installation. 
+echo "The script has finished installation."
 
 exit 0
