@@ -1,5 +1,5 @@
 ![](logo.jpg)
-### Installation Script for a Raspberry Pi Seedbox
+# Installation Script for a Raspberry Pi Seedbox
 
 ### Usage
 This Script will install mutliple programs and configure them. After installation you'll have a private seedbox, running the following programs:
