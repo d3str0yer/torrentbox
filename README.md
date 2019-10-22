@@ -91,6 +91,6 @@ This usually fixes it, as VPN servers can crash and restarting the service will 
 sudo service openvpn stop
 sudo openvpn /etc/openvpn/openvpn.conf
 ```
-Read what the console outputs, if you get errors concerning certificates just download the openvpn config files from your provider. If it says "Initialization Sequence Completed" OpenVPN works fine and you must restart the device.
+Read what the console outputs, if you get errors concerning certificates just redo the steps from "Pre-Install OpenVPN configuration" and upload them to /etc/openvpn.
 
 _ask questions and I'll add them here_
