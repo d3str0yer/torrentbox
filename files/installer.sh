@@ -66,13 +66,6 @@ echo -e "fail2ban ${RED}[INSTALLED]${DEF}"
 echo
 sleep 1
 
-#install qbittorrent-nox
-echo "installing openvpn..."
-apt-get install qbittorrent-nox -y 2>&1 >> log.txt
-echo -e "qbittorrent-nox ${RED}[INSTALLED]${DEF}"
-echo
-sleep 1
-
 #install samba, 3 echo lines to surpress the popup
 echo "samba-common samba-common/workgroup string  WORKGROUP" | debconf-set-selections
 echo "samba-common samba-common/dhcp boolean true" | debconf-set-selections
