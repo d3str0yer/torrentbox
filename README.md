@@ -1,4 +1,5 @@
 # torrentbox
+![](logo.jpg)
 > Installation Script for a Raspberry Pi Seedbox
 
 ### Usage
