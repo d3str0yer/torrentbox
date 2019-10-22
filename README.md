@@ -5,6 +5,7 @@
 This Script will install mutliple programs and configure them. After installation, you'll have a private seedbox running the following programs:
 * qbittorrent-nox (accessible through the web interface)
 * OpenVPN
+* Pseudo Killswitch with IPtables
 * fail2ban (intrusion prevention software)
 * samba (network share to access your files from other devices in the network)
 * lighttpd (webserver to display network statistics)
@@ -80,5 +81,16 @@ sudo ./torrentbox.sh
 ```
 
 ### FAQ
+
+##### qBittorrent is no longer up/downloading
+```sh
+sudo service openvpn restart
+```
+This usually fixes it, as VPN servers can crash and restarting the service will connect you to a new server. If it still doesn't work:
+```sh
+sudo service openvpn stop
+sudo openvpn /etc/openvpn/openvpn.conf
+```
+Read what the console outputs, if you get errors concerning certificates just download the openvpn config files from your provider. If it says "Initialization Sequence Completed" OpenVPN works fine and you must restart the device.
 
 _ask questions and I'll add them here_
