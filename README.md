@@ -82,7 +82,7 @@ sudo ./torrentbox.sh
 
 ### FAQ
 
-* qBittorrent is no longer up/downloading
+> qBittorrent is no longer up/downloading
 ```sh
 sudo service openvpn restart
 ```
