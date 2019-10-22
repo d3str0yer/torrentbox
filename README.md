@@ -1,5 +1,12 @@
-![](logo.jpg)
+![](files/logo.jpg)
 # Installation Script for a Raspberry Pi Seedbox
+
+# TODO
+[ ] motd
+[ ] testing of full installation
+[ ] beta testing
+[ ] add part about uploading openvpn files
+[ ] 
 
 ### Usage
 This Script will install mutliple programs and configure them. After installation, you'll have a private seedbox running the following programs:
@@ -35,7 +42,7 @@ This Script will install mutliple programs and configure them. After installatio
 
 ### Pre-Install Harddrive configuration
 
-_Warning: This will delete ALL data on your harddrives._
+__Warning: This will delete ALL data on your harddrives.__
 
 _Skip if you already have formatted storage devices or want to use a NAS_
 
