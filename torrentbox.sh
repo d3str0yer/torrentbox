@@ -40,12 +40,13 @@ while read -r -n 1 -s answer; do
 done
 echo
 
-echo 
+#pesky rights
+chmod u+x files/*.sh
 
 ./files/installer.sh
-
 ./files/config.sh
 
+echo
 echo "The script has finished installation."
 
 exit 0

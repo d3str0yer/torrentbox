@@ -1,0 +1,11 @@
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
+Restarting fail2ban (via systemctl): fail2ban.service.
