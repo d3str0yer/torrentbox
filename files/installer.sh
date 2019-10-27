@@ -17,16 +17,6 @@ echo -e "${RED}                                                       "
 #This file is part of "torrentbox" which is released under the
 #MIT license.
 
-#check for root
-echo
-echo -e "${DEF}checking for root"
-if ! [ $(id -u) = 0 ]; then
-   echo 
-   echo -e "${RED}I don't work without permissions. Start me again with sudo."
-   exit 1
-fi
-echo -e "root ${RED}[OK]${DEF}"
-
 # >/dev/null 2>&1
 # later put in
 
