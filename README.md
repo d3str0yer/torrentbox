@@ -59,6 +59,8 @@ sudo mkfs.ext4 /dev/sda1
 
 _Repeat these steps for /dev/sdb if you use a second storage device (suggested)_
 
+### Permanentely mounting Harddrives
+
 ```sh
 sudo nano /etc/fstab
 ```
