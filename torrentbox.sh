@@ -7,6 +7,16 @@
 RED='\033[0;31m' #
 DEF='\033[0m' # default color, use after something in red else everything is red..
 
+#check for root
+echo
+echo -e "${DEF}checking for root"
+if ! [ $(id -u) = 0 ]; then
+   echo 
+   echo -e "${RED}I don't work without permissions. Start me again with sudo."
+   exit 1
+fi
+echo -e "root ${RED}[OK]${DEF}"
+
 #header
 clear
 echo -e "${RED}  ______                           __  __              "
