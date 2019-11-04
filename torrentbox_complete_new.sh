@@ -16,6 +16,7 @@
 #function to check/install and print what has installed
 license() {
 clear
+echo ""
 echo "Copyright (c) 2019 d3str0yer"
 echo
 echo "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:"
@@ -143,7 +144,7 @@ echo -e "${color_default}If this is a new installation, it is highly suggested t
 echo -n "Would you like to change the password now? (Y/N)"
 while read -r -n 1 -s answer; do
   if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && passwd pi
+    [[ $answer = [Yy] ]] && echo && passwd pi && echo
     [[ $answer = [Nn] ]] && echo && echo -e "${color_red}Password for user \"pi\" not changed!${color_default}" && echo
     break
   fi
@@ -155,7 +156,7 @@ if [ $mode -eq 1 ] ; then
   echo -n "Would you like to change the password now? (Y/N)"
   while read -r -n 1 -s answer; do
     if [[ $answer = [YyNn] ]]; then
-      [[ $answer = [Yy] ]] && passwd root
+      [[ $answer = [Yy] ]] && passwd root && echo
       [[ $answer = [Nn] ]] && echo && echo -e "${color_red}Password for user \"root\" not changed!${color_default}" && echo
       break
     fi
@@ -215,13 +216,13 @@ echo "directory mask = 0777" >> /etc/samba/smb.conf
 echo "Public = no" >> /etc/samba/smb.conf
 echo -e "Please set a Password for the Network Share:"
 smbpasswd -a pi
-systemctl restart smbd >/dev/null 2>&1
+systemctl restart smbd > /dev/null 2>&1
 chmod -R 757 /mnt
 
-# qbittorrent stuff
+#qbittorrent stuff
 echo "creating user for qbittorrent..."
 useradd -p $(openssl passwd -1 supersecretpasswordforqbittorrent) -d /home/qbtuser -m -c "qbittorrent user" -s /bin/bash qbtuser
-sudo su -c "mkdir -p ~/.config/qBittorrent | touch ~/.config/qBittorrent/qBittorrent.conf" qbtuser  
+sudo su -c "mkdir -p ~/.config/qBittorrent && touch ~/.config/qBittorrent/qBittorrent.conf" qbtuser
 usermod -s /usr/sbin/nologin qbtuser
 echo "[LegalNotice]" >> /home/qbtuser/.config/qBittorrent/qBittorrent.conf
 echo "Accepted=true" >> /home/qbtuser/.config/qBittorrent/qBittorrent.conf
@@ -247,26 +248,10 @@ echo "sleep 7" >> /etc/rc.local
 echo "service qbittorrent start" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 
-#custom motd displaying uptime and whatnot
-echo "setting up motd..."
-echo "/home/pi/torrentbox-master/files/welcome.sh" >> /etc/profile
-echo "" > /etc/motd
-echo "MOTD will display your storage space, for this it needs to know how many devices you have attached. (Select 1 or 2)"
-while read -r -n 1 -s answer; do
-  if [[ $answer = [12] ]]; then
-    [[ $answer = [1] ]] && cp files/welcome1.sh files/welcome.sh
-    [[ $answer = [2] ]] && cp files/welcome2.sh files/welcome.sh
-    break
-  fi
-done
-rm files/welcome[12].sh 
-chmod u+x files/welcome.sh
-echo
-
 #cronjobs for restarting openvpn every 6 hours and create vnstati pictures every 5 minutes
 echo "setting up cronjobs..."
 echo "0 */6 * * * sudo service openvpn restart >/dev/null 2>&1" >> cronjob
-echo "*/5 * * * * nice /home/pi/torrentbox-master/files/vnstati.sh >/dev/null 2>&1" >> cronjob
+echo "*/5 * * * * nice /home/pi/torrentbox/files/vnstati.sh >/dev/null 2>&1" >> cronjob
 crontab cronjob
 rm cronjob
 
@@ -279,14 +264,13 @@ if [ $mode -eq 1 ] ; then
   echo "Now use WinSCP to connect to your Raspberry Pi as user \"root\" and paste your Openvpn certificates and configuration files into /etc/openvpn"
   read -n 1 -s -r -p "Press any key to continue"
   #inital connection is required to setup vnstat, this will start openvpn and send it to the background without stdout.
+  echo
   echo "connecting to VPN server..."
   openvpn /etc/openvpn/openvpn.conf > /dev/null &
   sleep 10
-  echo "Your IP is `curl -s icanhazip.com`, if this isn't your VPNs IP something went wrong."
-  read -n 1 -s -r -p "Press any key to continue"
   #iptables firewall config
   echo "installing iptables-persistent..."
-  apt-get install iptables-persistent -y
+  apt-get install iptables-persistent -y > /dev/null 2>&1
   #change sysctl.conf to disable ipv6
   echo "disabling ipv6..."
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
