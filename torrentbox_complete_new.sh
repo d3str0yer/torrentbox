@@ -54,8 +54,12 @@ mode1() {
 packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
 }
 
-mode2() {
-packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
+#mode2() {
+#packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
+#}
+
+#mode2() {
+packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "lighttpd")
 }
 
 installer() {
@@ -87,6 +91,8 @@ figlet -f slant Torrentbox
 printf "${color_default}"
 
 #setting variables for installation, otherwise the installation will not continue due to a popup asking for user input
+echo
+echo "setting installation variables"
 echo "samba-common samba-common/workgroup string  WORKGROUP" | debconf-set-selections
 echo "samba-common samba-common/dhcp boolean true" | debconf-set-selections
 echo "samba-common samba-common/do_debconf boolean true" | debconf-set-selections
@@ -95,6 +101,7 @@ echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debcon
 
 #updating and upgrading system 
 echo "updating and upgrading system"
+echo "this will take a while on a new installation"
 apt-get update > /dev/null 2>&1
 apt-get upgrade -y > /dev/null 2>&1
 echo
@@ -163,20 +170,25 @@ if [ $mode -eq 1 ] ; then
   done
 fi
 
-#select if hdd+usb or just hdd
+#select if hdd+usb or just hdd, also gets the correct welcome script in place
 echo "In order to create folders for torrents and temporary storage, please select your setup:"
 echo "1: HDD for storage + USB stick to cache downloads"
 echo -n "2: HDD only"
 while read -r -n 1 -s storage; do
   if [[ $storage = [12] ]]; then
     echo "creating folders..."
-    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching}
-    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching}
+    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} cp files/welcome2.sh files/welcome.sh
+    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome1.sh files/welcome.sh
     break
   fi
 done
-echo
 tree /mnt --noreport
+echo "setting up motd..."
+echo "/home/pi/torrentbox/files/welcome.sh" >> /etc/profile
+echo "" > /etc/motd
+rm files/welcome[12].sh 
+chmod u+x files/welcome.sh
+echo
 
 #changing hostname
 echo "changing hostname to \"torrentbox\"..."
