@@ -50,16 +50,16 @@ done
 echo
 }
 
-mode1() {
-packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
-}
-
-#mode2() {
-#packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
+#mode1() {
+#packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
 #}
 
-#mode2() {
-packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "lighttpd")
+mode1() {
+packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "lighttpd")
+}
+
+mode2() {
+packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
 }
 
 installer() {
@@ -163,7 +163,7 @@ if [ $mode -eq 1 ] ; then
   echo -n "Would you like to change the password now? (Y/N)"
   while read -r -n 1 -s answer; do
     if [[ $answer = [YyNn] ]]; then
-      [[ $answer = [Yy] ]] && passwd root && echo
+      [[ $answer = [Yy] ]] && echo && passwd root && echo
       [[ $answer = [Nn] ]] && echo && echo -e "${color_red}Password for user \"root\" not changed!${color_default}" && echo
       break
     fi
@@ -177,7 +177,7 @@ echo -n "2: HDD only"
 while read -r -n 1 -s storage; do
   if [[ $storage = [12] ]]; then
     echo "creating folders..."
-    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} cp files/welcome2.sh files/welcome.sh
+    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome2.sh files/welcome.sh
     [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome1.sh files/welcome.sh
     break
   fi
