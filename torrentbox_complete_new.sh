@@ -84,6 +84,9 @@ fi
 license
 
 #header
+#irgendwas schreiben weil sonst hä kaputt?
+#header in unterprogramm
+echo "starting script..."
 dpkg -s figlet > /dev/null 2>&1 || apt-get install figlet -y > /dev/null 2>&1
 clear
 printf "${color_red}"
@@ -107,6 +110,7 @@ apt-get upgrade -y > /dev/null 2>&1
 echo
 
 #select installation mode
+#clear und header
 echo "Please select the desired installation mode."
 echo "1: standard installation with OpenVPN and iptables"
 echo -n "2: minimal installation without OpenVPN and iptables"
@@ -119,6 +123,8 @@ while read -r -n 1 -s mode; do
 done
 
 #installing packages
+echo "Starting installation"
+echo
 aPackages=`expr ${#packages[@]} - 1`
 while [ $aPackages -le ${#packages[@]} -a $aPackages -ge 0 ] ; do
   installer ${#packages[$aPackages]}
@@ -176,6 +182,7 @@ echo "1: HDD for storage + USB stick to cache downloads"
 echo -n "2: HDD only"
 while read -r -n 1 -s storage; do
   if [[ $storage = [12] ]]; then
+    echo
     echo "creating folders..."
     [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome2.sh files/welcome.sh
     [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome1.sh files/welcome.sh
@@ -185,9 +192,9 @@ done
 tree /mnt --noreport
 echo "setting up motd..."
 echo "/home/pi/torrentbox/files/welcome.sh" >> /etc/profile
+chmod u+x /home/pi/torrentbox/files/welcome.sh
 echo "" > /etc/motd
 rm files/welcome[12].sh 
-chmod u+x files/welcome.sh
 echo
 
 #changing hostname
@@ -275,11 +282,6 @@ if [ $mode -eq 1 ] ; then
   #asking user to upload openvpn configuration files
   echo "Now use WinSCP to connect to your Raspberry Pi as user \"root\" and paste your Openvpn certificates and configuration files into /etc/openvpn"
   read -n 1 -s -r -p "Press any key to continue"
-  #inital connection is required to setup vnstat, this will start openvpn and send it to the background without stdout.
-  echo
-  echo "connecting to VPN server..."
-  openvpn /etc/openvpn/openvpn.conf > /dev/null &
-  sleep 10
   #iptables firewall config
   echo "installing iptables-persistent..."
   apt-get install iptables-persistent -y > /dev/null 2>&1
@@ -307,12 +309,14 @@ if [ $mode -eq 1 ] ; then
   iptables -P OUTPUT DROP
   iptables -P FORWARD DROP
   echo "saving iptables..."
-  netfilter-persistent save
-  systemctl enable netfilter-persistent
+  netfilter-persistent save > /dev/null 2>&1
+  systemctl enable netfilter-persistent > /dev/null 2>&1
 fi
 
+sudo apt-get install vnstati -y > /dev/null 2>&1
+echo "setting up vnstat..."
+sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
 ##TODO individual webinterfaces depending on setup
-##TODO vnstat garbage, with possible solutions: sudo chown -R vnstat:vnstat /var/lib/vnstat // creating new database as user vnstat
 ##
 ##
 ##ucking hell
