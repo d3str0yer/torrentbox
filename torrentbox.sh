@@ -65,7 +65,7 @@ packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat
 }
 
 installer() {
-dpkg -s "${packages[aPackages]}" > /dev/null 2>&1 || apt-get install ${packages[aPackages]} -y > /dev/null 2>&1 ; echo "Package ${packages[$aPackages]} installed"
+dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aPackages]} -y > $option 2>&1 ; echo "Package ${packages[$aPackages]} ${color_green}installed${color_default}"
 }
 
 ###################################################################################
@@ -82,10 +82,18 @@ if ! [ $(id -u) = 0 ]; then
    exit 1
 fi
 
+#verbose mode, for debugging or if you're paranoid :^)
+if [ "$1" = "-v" ] ; then
+  option='/dev/tty'
+else
+  option='/dev/null'
+fi
+
+
 #hello there
 echo "starting script..."
 #figlet is used to display the logo, check if it's there, if not install it
-dpkg -s figlet > /dev/null 2>&1 || apt-get install figlet -y > /dev/null 2>&1
+dpkg -s figlet > $option 2>&1 || apt-get install figlet -y > $option 2>&1
 header
 license
 
@@ -102,8 +110,8 @@ echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debcon
 #updating and upgrading system 
 echo "updating and upgrading system"
 echo "(this will take a while on a new installation)"
-apt-get update > /dev/null 2>&1
-apt-get upgrade -y > /dev/null 2>&1
+apt-get update > $option 2>&1
+apt-get upgrade -y > $option 2>&1
 echo
 
 #select installation mode
@@ -121,7 +129,7 @@ done
 
 #installing packages
 header
-echo "Starting installation"
+echo "Starting Installation"
 echo
 aPackages=`expr ${#packages[@]} - 1`
 while [ $aPackages -le ${#packages[@]} -a $aPackages -ge 0 ] ; do
@@ -134,7 +142,7 @@ echo
 echo -n "Would you like to install speedtest-cli? (command line speedtest) (Y/N)"
 while read -r -n 1 -s answer; do
   if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && echo && apt-get install speedtest-cli -y >/dev/null 2>&1 && echo "Package speedtest-cli installed" && echo
+    [[ $answer = [Yy] ]] && echo && apt-get install speedtest-cli -y > $option 2>&1 && echo "Package speedtest-cli installed" && echo
     [[ $answer = [Nn] ]] && echo && echo "Package speedtest-cli not installed" && echo
     break
   fi
@@ -142,7 +150,7 @@ done
 echo -n "Would you like to install netdata? (performance monitoring webinterface)(Y/N)"
 while read -r -n 1 -s answer; do
   if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && netdatainstalled=1 && echo && echo -e "${color_red}this installation will take a couple minutes${color_default}" && echo "installing packages required for netdata" && apt-get install zlib1g-dev uuid-dev libuv1-dev liblz4-dev libjudy-dev libssl-dev libmnl-dev gcc make git autoconf autoconf-archive autogen automake pkg-config curl python -y >/dev/null 2>&1 && echo "installing netdata" && cd ~ && git clone https://github.com/netdata/netdata.git --depth=100 -q && cd netdata && ./netdata-installer.sh && echo && echo "${color_red}DO NOT DELETE THE NETDATA FOLDER AFTER INSTALLATION, THIS WILL BREAK NETDATA!.${color_default}"  && cd ~/torrentbox && sleep 5
+    [[ $answer = [Yy] ]] && netdatainstalled=1 && echo && echo -e "${color_red}this installation will take a couple minutes${color_default}" && echo "installing packages required for netdata" && apt-get install zlib1g-dev uuid-dev libuv1-dev liblz4-dev libjudy-dev libssl-dev libmnl-dev gcc make git autoconf autoconf-archive autogen automake pkg-config curl python -y > $option 2>&1 && echo "installing netdata" && cd ~ && git clone https://github.com/netdata/netdata.git --depth=100 -q && cd netdata && ./netdata-installer.sh && echo "${color_red}DO NOT DELETE THE NETDATA FOLDER AFTER INSTALLATION, THIS WILL BREAK NETDATA!.${color_default}"  && cd /home/pi/torrentbox && echo && read -n 1 -s -r -p "Press any key to continue"
     [[ $answer = [Nn] ]] && echo && echo "not installing netdata" && sleep 2
     break
   fi
@@ -210,20 +218,20 @@ sed -i "s/#ignoreip = 127.0.0.1\/8 ::1/ignoreip = 127.0.0.1\/8 ::1 10.0.0.0\/8 1
 sed -i "s/bantime  = 10m/bantime = 21600/" /etc/fail2ban/jail.local
 sed -i "s/findtime  = 10m/findtime = 21600/" /etc/fail2ban/jail.local
 sed -i "s/maxretry = 5/maxretry = 3/" /etc/fail2ban/jail.local
-/etc/init.d/fail2ban restart >/dev/null 2>&1
+/etc/init.d/fail2ban restart > $option 2>&1
 
 #configuration of ssh
 echo
 echo "Configuring SSH..."
 sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/" /etc/ssh/sshd_config
-service ssh restart >/dev/null 2>&1
+service ssh restart > $option 2>&1
 
 #config swapfile
 echo
 echo "Increasing Swapfile..."
-dphys-swapfile swapoff >/dev/null 2>&1
+dphys-swapfile swapoff > $option 2>&1
 sed -i "s/CONF_SWAPSIZE=100/CONF_SWAPSIZE=1000/" /etc/dphys-swapfile
-dphys-swapfile swapon >/dev/null 2>&1
+dphys-swapfile swapon > $option 2>&1
 
 #samba config
 echo
@@ -240,7 +248,7 @@ echo "directory mask = 0777" >> /etc/samba/smb.conf
 echo "Public = no" >> /etc/samba/smb.conf
 echo -e "Please set a Password for the Network Share:"
 smbpasswd -a pi
-systemctl restart smbd > /dev/null 2>&1
+systemctl restart smbd > $option 2>&1
 chmod -R 757 /mnt
 
 #qbittorrent stuff
@@ -284,8 +292,8 @@ echo "exit 0" >> /etc/rc.local
 
 #cronjobs for restarting openvpn every 6 hours and create vnstati pictures every 5 minutes
 echo "setting up cronjobs..."
-echo "0 */6 * * * sudo service openvpn restart >/dev/null 2>&1" >> cronjob
-echo "*/5 * * * * nice /home/pi/torrentbox/files/vnstati.sh >/dev/null 2>&1" >> cronjob
+echo "0 */6 * * * sudo service openvpn restart > /dev/null 2>&1" >> cronjob
+echo "*/5 * * * * nice /home/pi/torrentbox/files/vnstati.sh > /dev/null 2>&1" >> cronjob
 crontab cronjob
 
 #if seedbox with vpn was selected
@@ -299,7 +307,7 @@ if [ $mode -eq 1 ] ; then
   #iptables firewall config
   echo
   echo "installing iptables-persistent..."
-  apt-get install iptables-persistent -y > /dev/null 2>&1
+  apt-get install iptables-persistent -y > $option 2>&1
   #change sysctl.conf to disable ipv6
   echo "disabling ipv6..."
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
@@ -324,8 +332,8 @@ if [ $mode -eq 1 ] ; then
   iptables -P OUTPUT DROP
   iptables -P FORWARD DROP
   echo "saving iptables..."
-  netfilter-persistent save > /dev/null 2>&1
-  systemctl enable netfilter-persistent > /dev/null 2>&1
+  netfilter-persistent save > $option 2>&1
+  systemctl enable netfilter-persistent > $option 2>&1
 fi
 
 echo "setting up vnstat..."
