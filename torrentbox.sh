@@ -56,8 +56,12 @@ done
 echo
 }
 
+#mode1() {
+#packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
+#}
+
 mode1() {
-packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
+packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "lighttpd")
 }
 
 mode2() {
@@ -65,7 +69,7 @@ packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat
 }
 
 installer() {
-dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aPackages]} -y > $option 2>&1 ; echo "Package ${packages[$aPackages]} ${color_green}installed${color_default}"
+dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aPackages]} -y > $option 2>&1 ; echo -e "Package ${packages[$aPackages]} ${color_green}installed${color_default}"
 }
 
 ###################################################################################
@@ -89,9 +93,8 @@ else
   option='/dev/null'
 fi
 
-
 #hello there
-echo "starting script..."
+echo "Starting Script..."
 #figlet is used to display the logo, check if it's there, if not install it
 dpkg -s figlet > $option 2>&1 || apt-get install figlet -y > $option 2>&1
 header
@@ -100,7 +103,7 @@ license
 #setting variables for installation, otherwise the installation will not continue due to a popup asking for user input
 header
 echo
-echo "setting installation variables"
+echo "Setting Installation Variables"
 echo "samba-common samba-common/workgroup string  WORKGROUP" | debconf-set-selections
 echo "samba-common samba-common/dhcp boolean true" | debconf-set-selections
 echo "samba-common samba-common/do_debconf boolean true" | debconf-set-selections
@@ -110,8 +113,8 @@ echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debcon
 #updating and upgrading system 
 echo "updating and upgrading system"
 echo "(this will take a while on a new installation)"
-apt-get update > $option 2>&1
-apt-get upgrade -y > $option 2>&1
+#apt-get update > $option 2>&1
+#apt-get upgrade -y > $option 2>&1
 echo
 
 #select installation mode
@@ -142,16 +145,17 @@ echo
 echo -n "Would you like to install speedtest-cli? (command line speedtest) (Y/N)"
 while read -r -n 1 -s answer; do
   if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && echo && apt-get install speedtest-cli -y > $option 2>&1 && echo "Package speedtest-cli installed" && echo
-    [[ $answer = [Nn] ]] && echo && echo "Package speedtest-cli not installed" && echo
+    [[ $answer = [Yy] ]] && echo && apt-get install speedtest-cli -y > $option 2>&1 && echo -e "Package speedtest-cli ${color_green}installed${color_default}" && echo
+    [[ $answer = [Nn] ]] && echo && echo -e "Package speedtest-cli ${color_red}not installed${color_default}" && echo
     break
   fi
 done
+
 echo -n "Would you like to install netdata? (performance monitoring webinterface)(Y/N)"
 while read -r -n 1 -s answer; do
   if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && netdatainstalled=1 && echo && echo -e "${color_red}this installation will take a couple minutes${color_default}" && echo "installing packages required for netdata" && apt-get install zlib1g-dev uuid-dev libuv1-dev liblz4-dev libjudy-dev libssl-dev libmnl-dev gcc make git autoconf autoconf-archive autogen automake pkg-config curl python -y > $option 2>&1 && echo "installing netdata" && cd ~ && git clone https://github.com/netdata/netdata.git --depth=100 -q && cd netdata && ./netdata-installer.sh && echo "${color_red}DO NOT DELETE THE NETDATA FOLDER AFTER INSTALLATION, THIS WILL BREAK NETDATA!.${color_default}"  && cd /home/pi/torrentbox && echo && read -n 1 -s -r -p "Press any key to continue"
-    [[ $answer = [Nn] ]] && echo && echo "not installing netdata" && sleep 2
+    [[ $answer = [Yy] ]] && netdatainstalled=1 && echo && echo -e "${color_red}This Installation will take a couple minutes${color_default}" && echo "Installing Packages required for netdata" && apt-get install zlib1g-dev uuid-dev libuv1-dev liblz4-dev libjudy-dev libssl-dev libmnl-dev gcc make git autoconf autoconf-archive autogen automake pkg-config curl python -y > $option 2>&1 && echo "Installing netdata" && cd /home/pi && git clone https://github.com/netdata/netdata.git --depth=100 -q && cd netdata && ./netdata-installer.sh && echo -e "${color_red}DO NOT DELETE THE NETDATA FOLDER AFTER INSTALLATION, THIS WILL BREAK NETDATA!.${color_default}"  && cd /home/pi/torrentbox && echo && read -n 1 -s -r -p "Press any key to continue"
+    [[ $answer = [Nn] ]] && echo && echo -e "Package netdata ${color_red}not installed${color_default}" && sleep 2
     break
   fi
 done
@@ -191,14 +195,15 @@ echo -n "2: HDD only"
 while read -r -n 1 -s storage; do
   if [[ $storage = [12] ]]; then
     echo
-    echo "creating folders..."
-    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome1.sh ~/welcome.sh
-    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome2.sh ~/welcome.sh
+	echo
+    echo "Creating Folders..."
+    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome1.sh /home/pi/welcome.sh
+    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome2.sh /home/pi/welcome.sh
     break
   fi
 done
-chmod 755 ~/welcome.sh
-chown pi:pi ~/welcome.sh
+chmod 755 /home/pi/welcome.sh
+chown pi:pi /home/pi/welcome.sh
 tree /mnt --noreport
 echo
 echo "Setting up MOTD..."
@@ -284,38 +289,42 @@ systemctl disable qbittorrent
 sudo chown -R qbtuser:qbtuser /mnt/
 
 #delayed start of qbittorrent, if it starts automatically it'll be faster than the hdd spinning up and end up erroring out
-echo "setting up delay for qbittorrent..."
+echo
+echo "Setting up delay for qBittorrent..."
 sed -i "s/exit 0//" /etc/rc.local
 echo "sleep 7" >> /etc/rc.local
 echo "service qbittorrent start" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 
 #cronjobs for restarting openvpn every 6 hours and create vnstati pictures every 5 minutes
-echo "setting up cronjobs..."
+echo
+echo "Setting up cronjobs..."
 echo "0 */6 * * * sudo service openvpn restart > /dev/null 2>&1" >> cronjob
-echo "*/5 * * * * nice /home/pi/torrentbox/files/vnstati.sh > /dev/null 2>&1" >> cronjob
+echo "*/5 * * * * nice /home/pi/vnstati.sh > /dev/null 2>&1" >> cronjob
 crontab cronjob
 
 #if seedbox with vpn was selected
 if [ $mode -eq 1 ] ; then
   #adding openvpn to autostart
-  echo "set openvpn to autostart..."
+  echo "Set OpenVPN to Autostart..."
   sed -i "s/#AUTOSTART=\"all\"/AUTOSTART=\"openvpn\"/" /etc/default/openvpn
   #asking user to upload openvpn configuration files
-  echo "Now use WinSCP to connect to your Raspberry Pi as user \"root\" and paste your Openvpn certificates and configuration files into /etc/openvpn"
-  read -n 1 -s -r -p "Press any key to continue"
+  echo "Now use WinSCP to connect to your Raspberry Pi as user \"root\" and place your OpenVPN certificates and configuration files into /etc/openvpn"
+  read -n 1 -s -r -p "Press any Key to continue"
   #iptables firewall config
   echo
-  echo "installing iptables-persistent..."
+  echo "Installing iptables-persistent..."
   apt-get install iptables-persistent -y > $option 2>&1
   #change sysctl.conf to disable ipv6
+  echo
   echo "disabling ipv6..."
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
   echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
   echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
   echo "net.ipv6.conf.lo.disable_ipv6=1" >> /etc/sysctl.conf
   echo "net.ipv6.conf.eth0.disable_ipv6=1" >> /etc/sysctl.conf
-  #echo "creating iptables..."
+  echo
+  echo "Creating iptables..."
   iptables -A INPUT -i lo -j ACCEPT
   iptables -A OUTPUT -o lo -j ACCEPT
   iptables -A INPUT -s 192.168.178.0/24 -j ACCEPT
@@ -331,15 +340,28 @@ if [ $mode -eq 1 ] ; then
   iptables -P INPUT DROP
   iptables -P OUTPUT DROP
   iptables -P FORWARD DROP
-  echo "saving iptables..."
+  echo
+  echo "Saving iptables..."
   netfilter-persistent save > $option 2>&1
   systemctl enable netfilter-persistent > $option 2>&1
 fi
 
-echo "setting up vnstat..."
-sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
+#echo
+#echo "Setting up vnstat..."
+#sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
+#manually creat a new database because vnstat sometimes doesn't do it itself
+#vnstat -u -i tun0
+#remove old databases because vnstat randomly writes stuff to other databases just for fun
+#rm -f /var/lib/vnstat/.eth0
+#rm -f /var/lib/vnstat/eth0
+#rm -f /var/lib/vnstat/.wlan0
+#rm -f /var/lib/vnstat/wlan0
+
+cp files/vnstati.sh /home/pi/vnstati.sh
 
 #web landing page with bookmarks
+echo
+echo "Creating landing page for Webserver..."
 if [ $netdatainstalled -eq 1 ] ; then
   mv files/html/index1.html files/html/index.html
   rm files/html/index2.html
@@ -347,12 +369,19 @@ else
   mv files/html/index2.html files/html/index.html
   rm files/html/index1.htlm
 fi
-cp -R files/html /var/html
+cp -R files/html /var/www/
 
 #goodbye
-rm -r ~/torrentbox
+rm -r /home/pi/torrentbox
 
 #todo: end of installation message, short tutorial, mounting samba share on windows
+header
+echo "Installation and Configuration has finished."
+echo
+echo "You can now access your Torrentbox through your Browser by opening http://torrentbox"
+echo "The Default Username of qBittorrent is \"admin\" and the password is \"adminadmin\""
+echo
+echo "Before using the Torrentbox, please Reboot your System once.
 echo "##############################################################################"
 echo "end of script $0"
 echo "##############################################################################"
