@@ -13,9 +13,15 @@
 ###################################################################################
 ############################ functions ############################################
 
+header() {
+clear
+printf "${color_red}"
+figlet -f slant Torrentbox
+printf "${color_default}"
+}
+
 #function to check/install and print what has installed
 license() {
-clear
 echo ""
 echo "Copyright (c) 2019 d3str0yer"
 echo
@@ -35,7 +41,7 @@ while read -r -n 1 -s answer; do
 done
 
 #disclaimer
-clear
+header
 echo
 echo "Disclaimer: Using torrents to down- and upload copyright protected material is in most countries against the law."
 echo
@@ -76,20 +82,15 @@ if ! [ $(id -u) = 0 ]; then
    exit 1
 fi
 
-#calling function license 
+#hello there
+echo "starting script..."
+#figlet is used to display the logo, check if it's there, if not install it
+dpkg -s figlet > /dev/null 2>&1 || apt-get install figlet -y > /dev/null 2>&1
+header
 license
 
-#header
-#irgendwas schreiben weil sonst hä kaputt?
-#header in unterprogramm
-echo "starting script..."
-dpkg -s figlet > /dev/null 2>&1 || apt-get install figlet -y > /dev/null 2>&1
-clear
-printf "${color_red}"
-figlet -f slant Torrentbox
-printf "${color_default}"
-
 #setting variables for installation, otherwise the installation will not continue due to a popup asking for user input
+header
 echo
 echo "setting installation variables"
 echo "samba-common samba-common/workgroup string  WORKGROUP" | debconf-set-selections
@@ -100,13 +101,13 @@ echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debcon
 
 #updating and upgrading system 
 echo "updating and upgrading system"
-echo "this will take a while on a new installation"
+echo "(this will take a while on a new installation)"
 apt-get update > /dev/null 2>&1
 apt-get upgrade -y > /dev/null 2>&1
 echo
 
 #select installation mode
-#clear und header
+header
 echo "Please select the desired installation mode."
 echo "1: standard installation with OpenVPN and iptables"
 echo -n "2: minimal installation without OpenVPN and iptables"
@@ -119,6 +120,7 @@ while read -r -n 1 -s mode; do
 done
 
 #installing packages
+header
 echo "Starting installation"
 echo
 aPackages=`expr ${#packages[@]} - 1`
@@ -140,14 +142,16 @@ done
 echo -n "Would you like to install netdata? (performance monitoring webinterface)(Y/N)"
 while read -r -n 1 -s answer; do
   if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && netdatainstalled=1 && echo && echo -e "${color_red}this installation will take a couple minutes${color_default}" && echo "installing packages required for netdata" && apt-get install zlib1g-dev uuid-dev libuv1-dev liblz4-dev libjudy-dev libssl-dev libmnl-dev gcc make git autoconf autoconf-archive autogen automake pkg-config curl python -y >/dev/null 2>&1 && echo "installing netdata" && git clone https://github.com/netdata/netdata.git --depth=100 -q && cd netdata &&./netdata-installer.sh && echo && echo "${color_red}DO NOT DELETE THE NETDATA FOLDER AFTER INSTALLATION, THIS WILL BREAK IT.${color_default}"
+    [[ $answer = [Yy] ]] && netdatainstalled=1 && echo && echo -e "${color_red}this installation will take a couple minutes${color_default}" && echo "installing packages required for netdata" && apt-get install zlib1g-dev uuid-dev libuv1-dev liblz4-dev libjudy-dev libssl-dev libmnl-dev gcc make git autoconf autoconf-archive autogen automake pkg-config curl python -y >/dev/null 2>&1 && echo "installing netdata" && cd ~ && git clone https://github.com/netdata/netdata.git --depth=100 -q && cd netdata && ./netdata-installer.sh && echo && echo "${color_red}DO NOT DELETE THE NETDATA FOLDER AFTER INSTALLATION, THIS WILL BREAK NETDATA!.${color_default}"  && cd ~/torrentbox && sleep 5
     [[ $answer = [Nn] ]] && echo && echo "not installing netdata" && sleep 2
     break
   fi
 done
 
+#installation is now finished. configuration follows.
+
 #change pw for pi
-clear
+header
 echo
 echo -e "${color_default}If this is a new installation, it is highly suggested that you change the password of the user \"pi\"."
 echo -n "Would you like to change the password now? (Y/N)"
@@ -180,25 +184,27 @@ while read -r -n 1 -s storage; do
   if [[ $storage = [12] ]]; then
     echo
     echo "creating folders..."
-    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome2.sh files/welcome.sh
-    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome1.sh files/welcome.sh
+    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome1.sh ~/welcome.sh
+    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome2.sh ~/welcome.sh
     break
   fi
 done
+chmod 755 ~/welcome.sh
+chown pi:pi ~/welcome.sh
 tree /mnt --noreport
-echo "setting up motd..."
-echo "/home/pi/torrentbox/files/welcome.sh" >> /etc/profile
-chmod u+x /home/pi/torrentbox/files/welcome.sh
-echo "" > /etc/motd
-rm files/welcome[12].sh 
 echo
+echo "Setting up MOTD..."
+echo "/home/pi/welcome.sh" >> /etc/profile
+echo "" > /etc/motd
 
 #changing hostname
-echo "changing hostname to \"torrentbox\"..."
+echo
+echo "Changing Hostname to \"torrentbox\"..."
 echo "torrentbox" > /etc/hostname
 
 #configuration of fail2ban
-echo "configuring fail2ban..."
+echo
+echo "Configuring fail2ban..."
 cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 sed -i "s/#ignoreip = 127.0.0.1\/8 ::1/ignoreip = 127.0.0.1\/8 ::1 10.0.0.0\/8 172.16.0.0\/12 192.168.0.0\/16/" /etc/fail2ban/jail.local
 sed -i "s/bantime  = 10m/bantime = 21600/" /etc/fail2ban/jail.local
@@ -207,18 +213,21 @@ sed -i "s/maxretry = 5/maxretry = 3/" /etc/fail2ban/jail.local
 /etc/init.d/fail2ban restart >/dev/null 2>&1
 
 #configuration of ssh
-echo "configuring ssh..."
+echo
+echo "Configuring SSH..."
 sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/" /etc/ssh/sshd_config
 service ssh restart >/dev/null 2>&1
 
 #config swapfile
-echo "increasing swapfile..."
+echo
+echo "Increasing Swapfile..."
 dphys-swapfile swapoff >/dev/null 2>&1
 sed -i "s/CONF_SWAPSIZE=100/CONF_SWAPSIZE=1000/" /etc/dphys-swapfile
 dphys-swapfile swapon >/dev/null 2>&1
 
 #samba config
-echo "setting up smb server..."
+echo
+echo "Setting up SMB Server..."
 echo "[Torrents]" >> /etc/samba/smb.conf
 echo "Comment = Samba Share for Torrents" >> /etc/samba/smb.conf
 echo "Path = /mnt" >> /etc/samba/smb.conf
@@ -235,13 +244,23 @@ systemctl restart smbd > /dev/null 2>&1
 chmod -R 757 /mnt
 
 #qbittorrent stuff
-echo "creating user for qbittorrent..."
+echo
+echo "Creating User for qBittorrent..."
 useradd -p $(openssl passwd -1 supersecretpasswordforqbittorrent) -d /home/qbtuser -m -c "qbittorrent user" -s /bin/bash qbtuser
-sudo su -c "mkdir -p ~/.config/qBittorrent && touch ~/.config/qBittorrent/qBittorrent.conf" qbtuser
+sudo su -c "mkdir -p ~/.config/qBittorrent" qbtuser
 usermod -s /usr/sbin/nologin qbtuser
-echo "[LegalNotice]" >> /home/qbtuser/.config/qBittorrent/qBittorrent.conf
-echo "Accepted=true" >> /home/qbtuser/.config/qBittorrent/qBittorrent.conf
-echo "setting up qbittorrent service..."
+#qbittorrent configuration
+echo
+echo "Configuring qBittorrent.conf"
+if [ $storage -eq 1 ] ; then
+  mv files/qBittorrent1.conf /home/qbtuser/.config/qBittorrent/qBittorrent.conf
+else
+  mv files/qBittorrent2.conf /home/qbtuser/.config/qBittorrent/qBittorrent.conf
+fi
+chown qbtuser:qbtuser /home/qbtuser/.config/qBittorrent/qBittorrent.conf
+#creating qbittorrent service
+echo
+echo "Setting up qbittorrent Service..."
 echo "[Unit]" >> /etc/systemd/system/qbittorrent.service
 echo "Description=qBittorrent Daemon Service" >> /etc/systemd/system/qbittorrent.service
 echo "After=network.target" >> /etc/systemd/system/qbittorrent.service
@@ -268,7 +287,6 @@ echo "setting up cronjobs..."
 echo "0 */6 * * * sudo service openvpn restart >/dev/null 2>&1" >> cronjob
 echo "*/5 * * * * nice /home/pi/torrentbox/files/vnstati.sh >/dev/null 2>&1" >> cronjob
 crontab cronjob
-rm cronjob
 
 #if seedbox with vpn was selected
 if [ $mode -eq 1 ] ; then
@@ -279,6 +297,7 @@ if [ $mode -eq 1 ] ; then
   echo "Now use WinSCP to connect to your Raspberry Pi as user \"root\" and paste your Openvpn certificates and configuration files into /etc/openvpn"
   read -n 1 -s -r -p "Press any key to continue"
   #iptables firewall config
+  echo
   echo "installing iptables-persistent..."
   apt-get install iptables-persistent -y > /dev/null 2>&1
   #change sysctl.conf to disable ipv6
@@ -309,17 +328,21 @@ if [ $mode -eq 1 ] ; then
   systemctl enable netfilter-persistent > /dev/null 2>&1
 fi
 
-sudo apt-get install vnstati -y > /dev/null 2>&1
 echo "setting up vnstat..."
 sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
 
+#web landing page with bookmarks
 if [ $netdatainstalled -eq 1 ] ; then
-  mv index1.html index.html
-  rm index2.html
-elif
-  mv index2.html index.html
-  rm index1.htlm
+  mv files/html/index1.html files/html/index.html
+  rm files/html/index2.html
+else
+  mv files/html/index2.html files/html/index.html
+  rm files/html/index1.htlm
 fi
+cp -R files/html /var/html
+
+#goodbye
+rm -r ~/torrentbox
 
 #todo: end of installation message, short tutorial, mounting samba share on windows
 echo "##############################################################################"
