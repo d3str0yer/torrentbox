@@ -86,11 +86,9 @@ netdatainstalled=0
 #creating folder for scripts
 mkdir /opt/torrentbox
 
-#debugging: verbose mode or logging mode
+#debugging: verbose mode
 if [ "$1" = "-v" ] ; then
   option='/dev/tty'
-elif [ "$1" = "-l" ] ; then
-  option='install.log'
 else
   option='/dev/null'
 fi
@@ -359,15 +357,18 @@ if [ $netdatainstalled -eq 1 ] ; then
   rm files/html/index2.html
 else
   mv files/html/index2.html files/html/index.html
-  rm files/html/index1.htlm
+  rm files/html/index1.html
 fi
 cp -R files/html /var/www/
 
 #installation and configuration of vnstat
-#openvpn /etc/openvpn/openvpn.conf > /dev/null 2>&1 &
-#sollte auch so funktionieren..
 service openvpn start
+#the installation of vnstat seems to have some very unreliable source servers
 apt-get install vnstati -y > $option 2>&1
+apt-get install vnstati -y > $option 2>&1
+apt-get install vnstati -y > $option 2>&1
+apt-get install vnstati -y > $option 2>&1
+
 if [ $mode -eq 1 ] ; then
   rm -f /var/lib/vnstat/.eth0
   rm -f /var/lib/vnstat/eth0
@@ -385,7 +386,7 @@ chmod 755 /opt/torrentbox/vnstati.sh
 
 
 #goodbye
-rm -r /home/pi/torrentbox
+#rm -r /home/pi/torrentbox
 
 #TODO
 #end of installation message, short tutorial, mounting samba share on windows -> github
