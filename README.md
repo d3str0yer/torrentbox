@@ -23,6 +23,7 @@ This Script will install mutliple programs and configure them. After installatio
 * Clean install of the latest version of Raspbian (headless)
 * External HDD to keep your files, suggested: secondary device as a buffer for downloads, e.g. USB stick
 * VPN subscription (Provider must support OpenVPN)
+* If you're only downloading/seeding public domain content, then you won't need a VPN.
 
 ## Installation of Raspbian
 
