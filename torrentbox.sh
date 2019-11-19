@@ -1,16 +1,13 @@
 #! /bin/bash
 #
 # ---------------------------------------------------------------------------------
-#	torrentbox install script rev1
-#
+#	torrentbox install script final_ish
 #
 #	Copyright (c) 2019 d3str0yer
 #   github.com/d3str0yer
-#	d3str0yer999 at protonmail.com
 #	This file is part of "torrentbox" which is released under the MIT license.
 # ---------------------------------------------------------------------------------
 
-###################################################################################
 ############################ functions ############################################
 
 header() {
@@ -68,7 +65,6 @@ installer() {
 dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aPackages]} -y > $option 2>&1 ; echo -e "Package ${packages[$aPackages]} ${color_green}installed${color_default}"
 }
 
-###################################################################################
 ############################ main #################################################
 
 #check for root priviliges
@@ -95,13 +91,13 @@ fi
 
 #hello there
 echo "Starting Script..."
-#figlet is used to display the logo, check if it's there, if not install it
+#figlet is used to display the logo, check if it's there, if not - install it
 dpkg -s figlet > $option 2>&1 || apt-get install figlet -y > $option 2>&1
 header
 license
 
 #setting variables for installation, otherwise the installation will not continue due to a popup asking for user input
-#header
+header
 echo
 echo "Setting Installation Variables"
 echo "samba-common samba-common/workgroup string  WORKGROUP" | debconf-set-selections
@@ -113,12 +109,12 @@ echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debcon
 #updating and upgrading system 
 echo "updating and upgrading system"
 echo "(this will take a while on a new installation)"
-#apt-get update > $option 2>&1
-#apt-get upgrade -y > $option 2>&1
+apt-get update > $option 2>&1
+apt-get upgrade -y > $option 2>&1
 echo
 
 #select installation mode
-#header
+header
 echo "Please select the desired installation mode."
 echo "1: standard installation with OpenVPN and iptables"
 echo -n "2: minimal installation without OpenVPN and iptables"
@@ -131,7 +127,7 @@ while read -r -n 1 -s mode; do
 done
 
 #installing packages
-#header
+header
 echo "Starting Installation"
 echo
 aPackages=`expr ${#packages[@]} - 1`
@@ -163,7 +159,7 @@ done
 #installation is now finished. configuration follows.
 
 #change pw for pi
-#header
+header
 echo
 echo -e "${color_default}If this is a new installation, it is highly suggested that you change the password of the user \"pi\"."
 echo -n "Would you like to change the password now? (Y/N)"
@@ -349,9 +345,9 @@ if [ $mode -eq 1 ] ; then
   systemctl enable netfilter-persistent > $option 2>&1
 fi
 
-#web landing page with bookmarks
+#dashboard with bookmarks
 echo
-echo "Creating landing page for Webserver..."
+echo "Setting up Dashboard for Webserver..."
 if [ $netdatainstalled -eq 1 ] ; then
   mv files/html/index1.html files/html/index.html
   rm files/html/index2.html
@@ -363,7 +359,7 @@ cp -R files/html /var/www/
 
 #installation and configuration of vnstat
 service openvpn start
-#the installation of vnstat seems to have some very unreliable source servers
+#the installation of vnstat seems to have some very unreliable source servers, in testing installation aborts 1-3 times. dumb problems require dumb solutions.
 apt-get install vnstati -y > $option 2>&1
 apt-get install vnstati -y > $option 2>&1
 apt-get install vnstati -y > $option 2>&1
@@ -386,15 +382,14 @@ chmod 755 /opt/torrentbox/vnstati.sh
 
 
 #goodbye
-#rm -r /home/pi/torrentbox
+rm -r /home/pi/torrentbox
 
 #TODO
-#end of installation message, short tutorial, mounting samba share on windows -> github
-##header
+header
+echo
 echo "Installation and Configuration has finished."
 echo
-echo "You can now access your Torrentbox through your Browser by opening http://torrentbox"
-echo "The Default Username of qBittorrent is \"admin\" and the password is \"adminadmin\""
+echo "Check out the usage section for more information"
 echo
 echo -e "${color_red}Before using the Torrentbox, you must reboot your system once.${color_default}"
 exit 0
