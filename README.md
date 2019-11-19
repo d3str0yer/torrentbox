@@ -35,12 +35,13 @@ This Script will install mutliple programs and configure them. After installatio
 
 1. Search for your Providers OpenVPN files and download them
 2. Create a new file called login.conf, in the first line add your username and in the second your password (username and password supplied by VPN Provider)
-3. If the OpenVPN files contain multiple .ovpn files, delete all but the one server(-hub) you want to connect to and rename it to openvpn.conf
-4. Change the following lines:
-  * "auth-user-pass" to "auth-user-pass /etc/openvpn/login.conf"
-  * "ca ca.crt" to "ca /etc/openvpn/ca.crt"
-  * "cert client.crt" to "cert /etc/openvpn/client.crt"
-  * "key client.key" to "key /etc/openvpn/client.key"
+3. If the OpenVPN files contain multiple .ovpn files, delete all but the one server(-hub) you want to connect to and rename it to openvpn.conf and change the following lines accordingly:
+```sh
+auth-user-pass /etc/openvpn/login.conf
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/client.crt
+key /etc/openvpn/client.key
+  ```
 
 ## Pre-Install Harddrive configuration
 
@@ -71,7 +72,7 @@ _Repeat these steps for /dev/sdb if you use a second storage device (suggested)_
 ```sh
 sudo nano /etc/fstab
 ```
-```bash
+```sh
 #device        mountpoint             fstype    options  dump   fsck
 
 /dev/sda1    /mnt/stick    ext4    defaults,nofail,uid=1001,gid=1001    0    1
