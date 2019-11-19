@@ -12,7 +12,7 @@ This Script will install mutliple programs and configure them. After installatio
 * Pseudo Killswitch with IPtables
 * fail2ban (intrusion prevention software)
 * samba (network share to access your files from other devices in the network)
-* lighttpd (webserver to display network statistics)
+* lighttpd (lightweight webserver to display network statistics)
 * vnstat/vnstati (to create said network statistics)
 * motd script to display uptime, storage space, etc.
 * optionals
