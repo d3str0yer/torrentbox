@@ -3,10 +3,6 @@
 
 # IF YOU FIND THIS BY CHANCE, DO NOT USE, STILL IN DEVELOPMENT!
 
-
-todo: vnstat
-vnstati.sh depending on install mode
-
 ### Usage
 This Script will install mutliple programs and configure them. After installation, you'll have a private seedbox running the following programs:
 * qbittorrent-nox (accessible through the web interface)

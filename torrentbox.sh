@@ -56,10 +56,6 @@ done
 echo
 }
 
-#mode1() {
-#packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat" "vnstati" "lighttpd")
-#}
-
 mode1() {
 packages=("openvpn" "qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "lighttpd")
 }
@@ -79,6 +75,9 @@ dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aP
 color_red="\e[31m"
 color_green="\e[92m"
 color_default="\e[0m"
+
+#creating folder for scripts
+mkdir /opt/torrentbox
 
 #check for root priviliges
 if ! [ $(id -u) = 0 ]; then
@@ -197,17 +196,17 @@ while read -r -n 1 -s storage; do
     echo
 	echo
     echo "Creating Folders..."
-    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome1.sh /home/pi/welcome.sh
-    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome2.sh /home/pi/welcome.sh
+    [[ $storage = [1] ]] && mkdir /mnt/downloading && mkdir -p /mnt/hdd/{completed,torrentfiles,watching} && cp files/welcome1.sh /opt/torrentbox/welcome.sh
+    [[ $storage = [2] ]] && mkdir -p /mnt/hdd/{downloading,completed,torrentfiles,watching} && cp files/welcome2.sh /opt/torrentbox/welcome.sh
     break
   fi
 done
-chmod 755 /home/pi/welcome.sh
-chown pi:pi /home/pi/welcome.sh
+chmod 755 /opt/torrentbox/welcome.sh
+chown pi:pi /opt/torrentbox/welcome.sh
 tree /mnt --noreport
 echo
 echo "Setting up MOTD..."
-echo "/home/pi/welcome.sh" >> /etc/profile
+echo "/opt/torrentbox/welcome.sh" >> /etc/profile
 echo "" > /etc/motd
 
 #changing hostname
@@ -300,7 +299,7 @@ echo "exit 0" >> /etc/rc.local
 echo
 echo "Setting up cronjobs..."
 echo "0 */6 * * * sudo service openvpn restart > /dev/null 2>&1" >> cronjob
-echo "*/5 * * * * nice /home/pi/vnstati.sh > /dev/null 2>&1" >> cronjob
+echo "*/5 * * * * nice /opt/torrentbox/vnstati.sh > /dev/null 2>&1" >> cronjob
 crontab cronjob
 
 #if seedbox with vpn was selected
@@ -365,27 +364,32 @@ cp -R files/html /var/www/
 #openvpn /etc/openvpn/openvpn.conf > /dev/null 2>&1 &
 #sollte auch so funktionieren..
 service openvpn start
-apt-get install vnstati -yes
-rm -f /var/lib/vnstat/.eth0
-rm -f /var/lib/vnstat/eth0
-rm -f /var/lib/vnstat/.wlan0
-rm -f /var/lib/vnstat/wlan0
-sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
-sed -i "s/BandwidthDetection 1/BandwidthDetection 0/" /etc/vnstat.conf
+apt-get install vnstati -y > $option 2>&1
+if [ $mode -eq 1 ] ; then
+  rm -f /var/lib/vnstat/.eth0
+  rm -f /var/lib/vnstat/eth0
+  rm -f /var/lib/vnstat/.wlan0
+  rm -f /var/lib/vnstat/wlan0
+  sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
+  sed -i "s/BandwidthDetection 1/BandwidthDetection 0/" /etc/vnstat.conf
+  cp /home/pi/torrentbox/vnstati1.sh /opt/torrentbox/vnstati.sh
+else
+  cp /home/pi/torrentbox/vnstati2.sh /opt/torrentbox/vnstati.sh
+fi
+chown pi:pi /opt/torrentbox/vnstati.sh
+chmod 755 /opt/torrentbox/vnstati.sh
+
 
 #goodbye
 rm -r /home/pi/torrentbox
 
 #TODO
-#end of installation message, short tutorial, mounting samba share on windows
-header
+#end of installation message, short tutorial, mounting samba share on windows -> github
+#header
 echo "Installation and Configuration has finished."
 echo
 echo "You can now access your Torrentbox through your Browser by opening http://torrentbox"
 echo "The Default Username of qBittorrent is \"admin\" and the password is \"adminadmin\""
 echo
-echo "Before using the Torrentbox, please Reboot your System once."
-echo "##############################################################################"
-echo "end of script $0"
-echo "##############################################################################"
+echo -e "${color_red}Before using the Torrentbox, you must reboot your system once.${color_default}"
 exit 0
