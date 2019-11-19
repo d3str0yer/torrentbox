@@ -23,7 +23,7 @@ This Script will install mutliple programs and configure them. After installatio
 * Clean install of the latest version of Raspbian (headless)
 * External HDD to keep your files, suggested: secondary device as a buffer for downloads, e.g. USB stick
 * VPN subscription (Provider must support OpenVPN)
-  * If you're only downloading/seeding public domain content, then you won't need a VPN. The installation Script will offer you this choice.
+  * If you're only downloading/seeding public domain content, then you won't need a VPN. The installation script will offer you this choice.
 
 ## Installation of Raspbian
 
@@ -82,7 +82,7 @@ _Press CTRL+X, Y, ENTER to save the file_
 
 (change sda1 and sdb1 depending on which is the stick and which is the hdd, find out which is which with the command lsusb)
 
-You can do this step after the installation, or during, or before.
+You can do this step after the installation, or during, or before
 
 ## Start the Installation
 
@@ -102,23 +102,23 @@ sudo ./torrentbox.sh
 
 * After installation you'll be able to mount the /mnt folder through Samba on your Windows Computer
 * Open Explorer, right-click anywhere and click "Add Network Location"
-* Click "Next" until you get to the "Specifiy the location of your website" prompt.
-* Enter "\\torrentbox\torrents" and finish the wizzard.
-* The username for the share is "pi" and the password is the password you specified during installation.
+* Click "Next" until you get to the "Specifiy the location of your website" prompt
+* Enter "\\torrentbox\torrents" and finish the wizzard
+* The username for the share is "pi" and the password is the password you specified during installation
 
 ### Torrentbox Web Interface and Network Statistics
 
-* You can access the Web Interface through your Browser by opening [http://torrentbox](http://torrentbox).
-* From there you can access netdata (if you installed it), qBittorrent, and your network statistics.
+* You can access the Web Interface through your Browser by opening [http://torrentbox](http://torrentbox)
+* From there you can access netdata (if you installed it), qBittorrent, and your network statistics
 * Depending on your setup, this might not be possible or you need to add your router specific domain suffix, like .local or .lan
-* If that doens't work either you can add the Torrentbox to your hostfile, which is located under C:\Windows\System32\Drivers\etc\hosts.
+* If that doens't work either you can add the Torrentbox to your hostfile, which is located under C:\Windows\System32\Drivers\etc\hosts
 
 ### qBittorrent
 
-* Follow the link in the Web Interface, or open [http://torrentbox:8080](http://torrentbox:8080).
-* The default username for qBittorrent is "admin" and the password is "adminadmin".
+* Follow the link in the Web Interface, or open [http://torrentbox:8080](http://torrentbox:8080)
+* The default username for qBittorrent is "admin" and the password is "adminadmin"
 * You can add new torrents either through the Web Interface, or by placing your .torrent files in the folder /mnt/hdd/watching
-* __When manually restarting the Torrentbox make sure you pause all torrents, otherwise qBittorrent will perform a recheck on every file. This can take a very long time.__
+* __When manually restarting the Torrentbox make sure you pause all torrents, otherwise qBittorrent will perform a recheck on every file. This can take a very long time__
 
 
 
