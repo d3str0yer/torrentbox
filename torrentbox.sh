@@ -71,23 +71,26 @@ dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aP
 ###################################################################################
 ############################ main #################################################
 
-#define colors
-color_red="\e[31m"
-color_green="\e[92m"
-color_default="\e[0m"
-
-#creating folder for scripts
-mkdir /opt/torrentbox
-
 #check for root priviliges
 if ! [ $(id -u) = 0 ]; then
    echo -e "${color_red}I don't work without permissions. Start me again with sudo.${color_default}"
    exit 1
 fi
 
-#verbose mode, for debugging or if you're paranoid :^)
+#definitions
+color_red="\e[31m"
+color_green="\e[92m"
+color_default="\e[0m"
+netdatainstalled=0
+
+#creating folder for scripts
+mkdir /opt/torrentbox
+
+#debugging: verbose mode or logging mode
 if [ "$1" = "-v" ] ; then
   option='/dev/tty'
+elif [ "$1" = "-l" ] ; then
+  option='install.log'
 else
   option='/dev/null'
 fi
@@ -100,7 +103,7 @@ header
 license
 
 #setting variables for installation, otherwise the installation will not continue due to a popup asking for user input
-header
+#header
 echo
 echo "Setting Installation Variables"
 echo "samba-common samba-common/workgroup string  WORKGROUP" | debconf-set-selections
@@ -117,7 +120,7 @@ echo "(this will take a while on a new installation)"
 echo
 
 #select installation mode
-header
+#header
 echo "Please select the desired installation mode."
 echo "1: standard installation with OpenVPN and iptables"
 echo -n "2: minimal installation without OpenVPN and iptables"
@@ -130,7 +133,7 @@ while read -r -n 1 -s mode; do
 done
 
 #installing packages
-header
+#header
 echo "Starting Installation"
 echo
 aPackages=`expr ${#packages[@]} - 1`
@@ -162,7 +165,7 @@ done
 #installation is now finished. configuration follows.
 
 #change pw for pi
-header
+#header
 echo
 echo -e "${color_default}If this is a new installation, it is highly suggested that you change the password of the user \"pi\"."
 echo -n "Would you like to change the password now? (Y/N)"
@@ -372,10 +375,11 @@ if [ $mode -eq 1 ] ; then
   rm -f /var/lib/vnstat/wlan0
   sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
   sed -i "s/BandwidthDetection 1/BandwidthDetection 0/" /etc/vnstat.conf
-  cp /home/pi/torrentbox/vnstati1.sh /opt/torrentbox/vnstati.sh
+  cp /home/pi/torrentbox/files/vnstati1.sh /opt/torrentbox/vnstati.sh
 else
-  cp /home/pi/torrentbox/vnstati2.sh /opt/torrentbox/vnstati.sh
+  cp /home/pi/torrentbox/files/vnstati2.sh /opt/torrentbox/vnstati.sh
 fi
+sed -i "s/UnitMode 0/UnitMode 1/" /etc/vnstat.conf
 chown pi:pi /opt/torrentbox/vnstati.sh
 chmod 755 /opt/torrentbox/vnstati.sh
 
@@ -385,7 +389,7 @@ rm -r /home/pi/torrentbox
 
 #TODO
 #end of installation message, short tutorial, mounting samba share on windows -> github
-#header
+##header
 echo "Installation and Configuration has finished."
 echo
 echo "You can now access your Torrentbox through your Browser by opening http://torrentbox"
