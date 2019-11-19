@@ -273,7 +273,7 @@ fi
 chown qbtuser:qbtuser /home/qbtuser/.config/qBittorrent/qBittorrent.conf
 #creating qbittorrent service
 echo
-echo "Setting up qbittorrent Service..."
+echo "Setting up qBittorrent Service..."
 echo "[Unit]" >> /etc/systemd/system/qbittorrent.service
 echo "Description=qBittorrent Daemon Service" >> /etc/systemd/system/qbittorrent.service
 echo "After=network.target" >> /etc/systemd/system/qbittorrent.service
@@ -306,18 +306,21 @@ crontab cronjob
 #if seedbox with vpn was selected
 if [ $mode -eq 1 ] ; then
   #adding openvpn to autostart
+  echo
   echo "Set OpenVPN to Autostart..."
   sed -i "s/#AUTOSTART=\"all\"/AUTOSTART=\"openvpn\"/" /etc/default/openvpn
   #asking user to upload openvpn configuration files
+  echo
   echo "Now use WinSCP to connect to your Raspberry Pi as user \"root\" and place your OpenVPN certificates and configuration files into /etc/openvpn"
   read -n 1 -s -r -p "Press any Key to continue"
   #iptables firewall config
+  echo
   echo
   echo "Installing iptables-persistent..."
   apt-get install iptables-persistent -y > $option 2>&1
   #change sysctl.conf to disable ipv6
   echo
-  echo "disabling ipv6..."
+  echo "Disabling ipv6..."
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
   echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
   echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
@@ -346,19 +349,6 @@ if [ $mode -eq 1 ] ; then
   systemctl enable netfilter-persistent > $option 2>&1
 fi
 
-#echo
-#echo "Setting up vnstat..."
-#sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
-#manually creat a new database because vnstat sometimes doesn't do it itself
-#vnstat -u -i tun0
-#remove old databases because vnstat randomly writes stuff to other databases just for fun
-#rm -f /var/lib/vnstat/.eth0
-#rm -f /var/lib/vnstat/eth0
-#rm -f /var/lib/vnstat/.wlan0
-#rm -f /var/lib/vnstat/wlan0
-
-cp files/vnstati.sh /home/pi/vnstati.sh
-
 #web landing page with bookmarks
 echo
 echo "Creating landing page for Webserver..."
@@ -371,17 +361,30 @@ else
 fi
 cp -R files/html /var/www/
 
+#installation and configuration of vnstat
+#openvpn /etc/openvpn/openvpn.conf > /dev/null 2>&1 &
+#sollte auch so funktionieren..
+service openvpn start
+apt-get install vnstati -yes
+rm -f /var/lib/vnstat/.eth0
+rm -f /var/lib/vnstat/eth0
+rm -f /var/lib/vnstat/.wlan0
+rm -f /var/lib/vnstat/wlan0
+sed -i "s/Interface \"eth0\"/Interface \"tun0\"/" /etc/vnstat.conf
+sed -i "s/BandwidthDetection 1/BandwidthDetection 0/" /etc/vnstat.conf
+
 #goodbye
 rm -r /home/pi/torrentbox
 
-#todo: end of installation message, short tutorial, mounting samba share on windows
+#TODO
+#end of installation message, short tutorial, mounting samba share on windows
 header
 echo "Installation and Configuration has finished."
 echo
 echo "You can now access your Torrentbox through your Browser by opening http://torrentbox"
 echo "The Default Username of qBittorrent is \"admin\" and the password is \"adminadmin\""
 echo
-echo "Before using the Torrentbox, please Reboot your System once.
+echo "Before using the Torrentbox, please Reboot your System once."
 echo "##############################################################################"
 echo "end of script $0"
 echo "##############################################################################"
