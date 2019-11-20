@@ -1,10 +1,6 @@
 ![](files/logo.jpg)
 # Installation Script for a Raspberry Pi Seedbox
 
-# IF YOU FIND THIS BY CHANCE, DO NOT USE, STILL IN DEVELOPMENT!
-
-# it pretty much works and is finished, but still awaiting peer review, if you find errors or mistakes send me a message on reddit or email me at my username at protonmail.com
-
 ## Usage
 This Script will install mutliple programs and configure them. After installation, you'll have a private seedbox running the following programs:
 * qbittorrent-nox (accessible through the web interface)
