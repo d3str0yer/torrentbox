@@ -43,6 +43,14 @@ _Skip if you already have formatted storage devices or want to use a NAS_
 
 Connect to your Raspberry Pi through SSH as user "pi" with the password "raspberry"
 
+Find out which device sda/sdb is the HDD and which is the USB stick with
+
+```sh
+sudo fdisk -l
+```
+
+Then
+
 ```sh
 sudo fdisk /dev/sda
 ```
