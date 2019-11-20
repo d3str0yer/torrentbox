@@ -5,7 +5,7 @@ echo
 # Date
 DATE=`date +"%A, %e %B %Y"`
 # Hostname
-HOSTNAME=`hostname -f`
+HOSTNAME=`hostname`
 # Last Login
 LAST1=`last -2 -a | awk 'NR==2{print $3}'`    # Weekday
 LAST2=`last -2 -a | awk 'NR==2{print $5}'`    # Day
