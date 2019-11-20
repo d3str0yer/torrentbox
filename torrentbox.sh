@@ -62,6 +62,8 @@ packages=("qbittorrent-nox" "fail2ban" "tree" "samba" "samba-common-bin" "vnstat
 }
 
 installer() {
+echo "domain ctc.local" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
 dpkg -s "${packages[aPackages]}" > $option 2>&1 || apt-get install ${packages[aPackages]} -y > $option 2>&1 ; echo -e "Package ${packages[$aPackages]} ${color_green}installed${color_default}"
 }
 
@@ -313,6 +315,8 @@ if [ $mode -eq 1 ] ; then
   echo
   echo
   echo "Installing iptables-persistent..."
+  echo "domain ctc.local" > /etc/resolv.conf
+  echo "nameserver 1.1.1.1" >> /etc/resolv.conf
   apt-get install iptables-persistent -y > $option 2>&1
   #change sysctl.conf to disable ipv6
   echo
@@ -360,6 +364,9 @@ cp -R files/html /var/www/
 #installation and configuration of vnstat
 service openvpn start
 #the installation of vnstat seems to have some very unreliable source servers, in testing installation aborts 1-3 times. dumb problems require dumb solutions.
+echo "domain ctc.local" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+
 apt-get install vnstati -y > $option 2>&1
 apt-get install vnstati -y > $option 2>&1
 apt-get install vnstati -y > $option 2>&1
